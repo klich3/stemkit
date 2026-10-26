@@ -29,7 +29,10 @@ import {
   getStatus
 } from './env'
 import { loadSettings, saveSettings } from './settings'
-import { loadSongs, removeSong, clearLibrary, stemBuffers, stemsDir, stemsFor, sanitizeName, exportStems, transcodeToAac } from './library'
+import {
+  loadSongs, removeSong, clearLibrary, stemBuffers, stemsDir, stemsFor, sanitizeName,
+  exportStems, transcodeToAac, loadStemPan, saveStemPan
+} from './library'
 import { AUDIO_EXTENSIONS } from '../shared/local'
 import { startJob, startLocalJob, cancelJob, searchYouTube } from './pipeline'
 import { initUpdater } from './updater'
@@ -229,6 +232,8 @@ app.whenReady().then(async () => {
   ipcMain.handle('env:update-ytdlp', async () => updateYtDlp())
 
   ipcMain.handle('library:list', () => loadSongs())
+  ipcMain.handle('song:pan:get', (_e, videoId: string) => loadStemPan(videoId))
+  ipcMain.handle('song:pan:set', (_e, videoId: string, pans: unknown) => saveStemPan(videoId, pans))
   ipcMain.handle('library:delete', (_e, videoId: string) => removeSong(videoId))
   ipcMain.handle('library:clear', () => {
     // cancel first: a running job would keep writing into the folder we are
@@ -350,7 +355,7 @@ app.whenReady().then(async () => {
       const youtube = ['youtube.com', 'www.youtube.com', 'youtu.be'].includes(url.hostname)
       const website = url.hostname === 'stemkit.pages.dev'
       const projectGithub =
-        url.hostname === 'github.com' && /^\/danvelope\/stemkit(?:\/|$)/.test(url.pathname)
+        url.hostname === 'github.com' && /^\/danielravina\/stemkit(?:\/|$)/.test(url.pathname)
       if (url.protocol === 'https:' && (youtube || website || projectGithub)) {
         shell.openExternal(url.toString())
       }

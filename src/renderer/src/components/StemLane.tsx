@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef } from 'react'
 import type { StemId } from '../../../shared/types'
 import { DownloadIcon } from './Icons'
+import { PanKnob } from './PanKnob'
 
 export interface StemMeta {
   id: StemId
@@ -37,6 +38,8 @@ interface Props {
   getPosition: () => number
   audible: boolean
   volume: number
+  pan: number
+  onPan: (value: number) => void
   muted: boolean
   soloed: boolean
   onToggleMute: () => void
@@ -53,6 +56,8 @@ export function StemLane({
   getPosition,
   audible,
   volume,
+  pan,
+  onPan,
   muted,
   soloed,
   onToggleMute,
@@ -173,6 +178,8 @@ export function StemLane({
           background: `linear-gradient(to right, ${meta.color} ${volume * 100}%, rgba(255,255,255,0.14) ${volume * 100}%)`
         }}
       />
+
+      <PanKnob label={meta.label} color={meta.color} value={pan} onChange={onPan} />
 
       {onExport && (
         <button

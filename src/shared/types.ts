@@ -1,4 +1,5 @@
 export type StemId = 'vocals' | 'drums' | 'bass' | 'other' | 'piano' | 'guitar'
+export type StemPanMap = Partial<Record<StemId, number>>
 
 // which GPU vendor GPU acceleration targets: NVIDIA via CUDA torch (windows
 // + linux), AMD via ROCm torch (linux only)
@@ -128,6 +129,8 @@ export interface StemKitApi {
   deleteSong(videoId: string): Promise<void>
   clearLibrary(): Promise<void>
   getBuffers(videoId: string): Promise<Record<string, Uint8Array>>
+  getStemPan(videoId: string): Promise<StemPanMap>
+  setStemPan(videoId: string, pans: StemPanMap): Promise<void>
   exportStem(videoId: string, stem: string): Promise<{ saved: boolean; path?: string }>
   exportAllStems(videoId: string): Promise<{ saved: boolean; path?: string; count?: number }>
   searchYouTube(query: string): Promise<SearchResult[]>
